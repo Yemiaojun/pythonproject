@@ -32,22 +32,12 @@ class Commentary:
 
         comment1 = self.color_greater_than_three(image)
         comment2 = self.color_less_than_three(image)
-
-        if comment1:
-            print(f"Triggered function: {self.color_greater_than_three.__name__}")
-            default_comment_list.append(comment1)
-        if comment2:
-            print(f"Triggered function: {self.color_less_than_three.__name__}")
-            default_comment_list.append(comment2)
+        comment4 = self.large_empty_space(image)
 
         comment3 = self.more_than_five_shapes(image)
         if comment3:
             print(f"Triggered function: {self.more_than_five_shapes.__name__}")
             comment_list.append(comment3)
-        comment4 = self.large_empty_space(image)
-        if comment4:
-            print(f"Triggered function: {self.large_empty_space.__name__}")
-            comment_list.append(comment4)
         comment5 = self.large_number_of_lines(image)
         if comment5:
             print(f"Triggered function: {self.large_number_of_lines.__name__}")
@@ -60,21 +50,26 @@ class Commentary:
         if comment7:
             print(f"Triggered function: {self.dominant_color_temperature.__name__}")
             comment_list.append(comment7)
-
         comment8 = self.contains_pink(image)
         if comment8:
             print(f"Triggered function: {self.contains_pink.__name__}")
             comment_list.append(comment8)
-
         comment9 = self.is_symmetric(image)
         if comment9:
             print(f"Triggered function: {self.is_symmetric.__name__}")
             comment_list.append(comment9)
 
-
-        # If no other conditions met, add default comments
-        if len(comment_list) == 0:
-            comment_list = default_comment_list
+        # If the comment_list contains 0 or 1 elements, add default comments
+        if len(comment_list) <= 1:
+            if comment1:
+                print(f"Triggered function: {self.color_greater_than_three.__name__}")
+                comment_list.append(comment1)
+            if comment2:
+                print(f"Triggered function: {self.color_less_than_three.__name__}")
+                comment_list.append(comment2)
+            if comment4:
+                print(f"Triggered function: {self.large_empty_space.__name__}")
+                comment_list.append(comment4)
 
         if comment_list:
             comment = np.random.choice(comment_list)
@@ -184,28 +179,35 @@ class Commentary:
 
             # Check if the average centroid is within the center region
             if abs(avg_cX - center_x) <= tolerance_x and abs(avg_cY - center_y) <= tolerance_y:
-                return "醒目的中心吸引了我的目光"
+                return "作品仿佛存在一个有力的重心"
 
     def dominant_color_temperature(self, image, min_percentage=0.9):
-        # Convert the image to HSV color space
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        # Calculate the total number of pixels
+        total_pixels = image.shape[0] * image.shape[1]
 
-        # Calculate the color histogram
-        hist = cv2.calcHist([hsv], [0], None, [180], [0, 180])
-
-        # Normalize the histogram
-        cv2.normalize(hist, hist)
-
-        # Get the most dominant hue
-        dominant_hue = np.argmax(hist)
+        # Calculate the number of black and white pixels
+        white_pixels = np.sum(np.all(image == [255, 255, 255], axis=-1))
+        black_pixels = np.sum(np.all(image == [0, 0, 0], axis=-1))
 
         # Calculate the percentage of black and white pixels
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        _, bw = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-        percentage_bw = np.count_nonzero(bw) / (image.shape[0] * image.shape[1])
+        percentage_bw = (white_pixels + black_pixels) / total_pixels
+        print(percentage_bw);
 
-        # Check the dominant hue and return the corresponding comment
+        # If the percentage of black and white pixels is less than the given threshold
         if percentage_bw < min_percentage:
+            # Convert the image to HSV color space
+            hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+            # Calculate the color histogram
+            hist = cv2.calcHist([hsv], [0], None, [180], [0, 180])
+
+            # Normalize the histogram
+            cv2.normalize(hist, hist)
+
+            # Get the most dominant hue
+            dominant_hue = np.argmax(hist)
+
+            # Check the dominant hue and return the corresponding comment
             if 0 <= dominant_hue <= 30 or 150 < dominant_hue <= 180:
                 return "从暖色中感受到了你的活力"
             elif 30 < dominant_hue <= 150:
@@ -221,7 +223,7 @@ class Commentary:
         if np.any(pink_pixels):
             return "粉色是我最喜欢的颜色"
 
-    def is_symmetric(self, image, similarity_index_threshold=0.9):
+    def is_symmetric(self, image, similarity_index_threshold=0.96):
         # Check if the image is a numpy array and its shape is as expected
 
         # Convert the image to grayscale
@@ -232,7 +234,7 @@ class Commentary:
 
         # Compute the structural similarity index between the grayscale image and its flipped version
         similarity_index = ssim(gray, flipped_gray)
-
+        print(similarity_index)
         # Return a message if the similarity index is above the given threshold
         if similarity_index > similarity_index_threshold:
             return "我在作品中看到了一种美丽的对称"

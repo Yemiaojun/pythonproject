@@ -18,7 +18,11 @@ class PaintApp:
     img_stack = []
     def __init__(self, root):
         self.root = root
+        self.root.title("Artist")
+        self.root.iconbitmap('Artist.ico')
         theme_color = "lightgrey"
+        self.root.resizable(False, False)
+
         # Create left and right frames
         self.left_frame = Frame(root, bg=theme_color)
         self.left_frame.pack(side=LEFT, fill=BOTH, expand=True)
@@ -46,6 +50,12 @@ class PaintApp:
         self.tool_icon_image = ImageTk.PhotoImage(tool_icon_image)
         self.tool_icon_label = Label(self.controls_frame, image=self.tool_icon_image, bg=theme_color)
         self.tool_icon_label.pack(side=LEFT)
+
+        color_icon_image = Image.open(os.path.join('icon', 'black.png'))  # default color icon
+        color_icon_image = color_icon_image.resize((30, 30), Image.ANTIALIAS)
+        self.color_icon_image = ImageTk.PhotoImage(color_icon_image)
+        self.color_icon_label = Label(self.controls_frame, image=self.color_icon_image, bg=theme_color)
+        self.color_icon_label.pack(side=LEFT)
 
         # Tool buttons
         self.tool_frame = Frame(self.controls_frame, bg=theme_color)
@@ -178,6 +188,10 @@ class PaintApp:
             'pink' : [255, 174, 201]
         }
         self.color = color_dict[color_name]
+        color_icon_image = Image.open(os.path.join('icon', f'{color_name}.png'))
+        color_icon_image = color_icon_image.resize((30, 30), Image.ANTIALIAS)
+        self.color_icon_image = ImageTk.PhotoImage(color_icon_image)
+        self.color_icon_label.config(image=self.color_icon_image)
 
     def use_pencil(self):
         self.drawing_tool = "pencil"
