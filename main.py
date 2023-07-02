@@ -121,7 +121,7 @@ class PaintApp:
             self.color_buttons.append(button)
 
         # Right frame content
-        self.comment_label = Label(self.right_frame, text="你好", pady=100, font=("SimHei", 20), bg=theme_color)
+        self.comment_label = Label(self.right_frame, text="你好", pady=100, font=("FangSong", 25), bg=theme_color)
         self.comment_label.pack(side=TOP, fill=X)
 
         reviewer_image = Image.open(os.path.join('icon', 'man2.png'))
@@ -143,11 +143,11 @@ class PaintApp:
         self.play_music('music/Salut.mp3')
 
         self.commentary = Commentary([
-            "艺术本身就是意象，一个艺术工作者不只是素描、绘画或雕刻而已，他一定要有思想",
+            "艺术有自己的思想",
             "当艺术穿着破旧衣衫时,最容易让人认出它是艺术",
             "我看到了你的灵感",
             "不存在糟糕的艺术，只有随意或刻意的艺术",
-            "如果你知道我的作品”丛林猎杀雪人“，你会知道艺术是什么",
+            "如果你看过我的作品\"丛林猎杀雪人\"，你会知道艺术是什么",
             "你的艺术让我惊叹",
             "艺术是人类的天性",
             "上帝创造了人类，人类创造了艺术",
@@ -157,15 +157,16 @@ class PaintApp:
             "思维的泉涌",
             "情感的乱流",
             "艺术的诞生地只有一个，那就是你",
-            "何不在画中增添一点”迷人的爱情“",
-            "何不在画中增添一点“吊诡的哀伤”",
-            "何不在画中增添一点”优雅的几何“",
-            "何不在画中增添一点“忧郁的漩涡”",
+            "何不在画中增添一点\"迷人的爱情\"",
+            "何不在画中增添一点\"吊诡的哀伤\"",
+            "何不在画中增添一点\"优雅的几何\"",
+            "何不在画中增添一点\"忧郁的漩涡\"",
             "何不在画中增添一点“井喷的秘密”",
             "简洁可以是艺术，繁复也可以是艺术",
             "你就是艺术",
             "我就是艺术",
-            "瀑布，瀑布"
+            "瀑布，瀑布",
+            "我们做不了正确的选择"
         ], self.comment_label)
 
         self.commentary.set_random_comment()
