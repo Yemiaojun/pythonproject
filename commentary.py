@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-
+from skimage.metrics import structural_similarity as ssim
 class Commentary:
     def __init__(self, phrases, comment_label):
         self.phrases = phrases
@@ -60,10 +60,17 @@ class Commentary:
         if comment7:
             print(f"Triggered function: {self.dominant_color_temperature.__name__}")
             comment_list.append(comment7)
+
         comment8 = self.contains_pink(image)
         if comment8:
             print(f"Triggered function: {self.contains_pink.__name__}")
             comment_list.append(comment8)
+
+        comment9 = self.is_symmetric(image)
+        if comment9:
+            print(f"Triggered function: {self.is_symmetric.__name__}")
+            comment_list.append(comment9)
+
 
         # If no other conditions met, add default comments
         if len(comment_list) == 0:
@@ -95,10 +102,10 @@ class Commentary:
         # 查找二值化图中的轮廓
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         # 判断轮廓数量是否大于5
-        if len(contours) > 5:
+        if len(contours) > 10:
             return "蕴含几何的杰作"
 
-    def large_empty_space(self, image, min_contour_area=5000):
+    def large_empty_space(self, image, min_contour_area=20000):
         # Special case: If the image is completely white, trigger this function
         if np.all(image == 255):
             return "空白之处，留给观者无限的遐想"
@@ -214,4 +221,19 @@ class Commentary:
         if np.any(pink_pixels):
             return "粉色是我最喜欢的颜色"
 
+    def is_symmetric(self, image, similarity_index_threshold=0.9):
+        # Check if the image is a numpy array and its shape is as expected
+
+        # Convert the image to grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # Flip the grayscale image horizontally
+        flipped_gray = cv2.flip(gray, 1)
+
+        # Compute the structural similarity index between the grayscale image and its flipped version
+        similarity_index = ssim(gray, flipped_gray)
+
+        # Return a message if the similarity index is above the given threshold
+        if similarity_index > similarity_index_threshold:
+            return "我在作品中看到了一种美丽的对称"
 
