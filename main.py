@@ -225,7 +225,7 @@ class PaintApp:
         if self.drawing_tool == 'pencil':
             cv2.line(self.img, (self.x_position, self.y_position), (event.x, event.y), self.color, self.brush_size * 2)
         elif self.drawing_tool == 'eraser':
-            cv2.circle(self.img, (event.x, event.y), self.brush_size, (255, 255, 255), -1)
+            cv2.line(self.img, (self.x_position, self.y_position), (event.x, event.y),  (255, 255, 255), self.brush_size * 2)
         self.x_position = event.x
         self.y_position = event.y
         self.update_canvas()
