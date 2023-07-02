@@ -3,21 +3,22 @@ from PIL import Image, ImageTk
 import cv2
 import numpy as np
 import os
-
+import pygame
+import time
+from commentary import Commentary
 
 class PaintApp:
     drawing_tool = "pencil"
     left_button = "up"
     x_position, y_position = None, None
     color = [0, 0, 0]  # default color is black
-    img = np.ones((500, 500, 3), dtype=np.uint8) * 255  # default background is white
+    img = np.ones((800, 500, 3), dtype=np.uint8) * 255  # default background is white
     img_tk = None
     brush_size = 5  # default brush size
     img_stack = []
     def __init__(self, root):
         self.root = root
         theme_color = "lightgrey"
-
         # Create left and right frames
         self.left_frame = Frame(root, bg=theme_color)
         self.left_frame.pack(side=LEFT, fill=BOTH, expand=True)
@@ -25,7 +26,7 @@ class PaintApp:
         self.right_frame.pack(side=RIGHT, fill=Y)
 
         # Drawing canvas setup
-        self.drawing_area = Canvas(self.left_frame, width=500, height=500)
+        self.drawing_area = Canvas(self.left_frame, width=500, height=800)
         self.img_tk = ImageTk.PhotoImage(Image.fromarray(self.img))
         self.canvas_img = self.drawing_area.create_image(0, 0, image=self.img_tk, anchor=NW)
         self.drawing_area.pack(side=TOP, fill=BOTH, expand=True)
@@ -110,7 +111,7 @@ class PaintApp:
             self.color_buttons.append(button)
 
         # Right frame content
-        self.comment_label = Label(self.right_frame, text="", pady=100, font=("Helvetica", 20), bg=theme_color)
+        self.comment_label = Label(self.right_frame, text="你好", pady=100, font=("SimHei", 20), bg=theme_color)
         self.comment_label.pack(side=TOP, fill=X)
 
         reviewer_image = Image.open(os.path.join('icon', 'man2.png'))
@@ -127,6 +128,41 @@ class PaintApp:
         self.drawing_area.bind("<Motion>", self.show_brush_size)
         self.drawing_area.bind("<ButtonRelease-1>", self.left_button_up)
 
+        # Initialize pygame mixer
+        pygame.mixer.init()
+        self.play_music('music/Salut.mp3')
+
+        self.commentary = Commentary([
+            "艺术本身就是意象，一个艺术工作者不只是素描、绘画或雕刻而已，他一定要有思想",
+            "当艺术穿着破旧衣衫时,最容易让人认出它是艺术",
+            "我看到了你的灵感",
+            "不存在糟糕的艺术，只有随意或刻意的艺术",
+            "如果你知道我的作品”丛林猎杀雪人“，你会知道艺术是什么",
+            "你的艺术让我惊叹",
+            "艺术是人类的天性",
+            "上帝创造了人类，人类创造了艺术",
+            "俗世于艺术相斥，却又密不可分",
+            "我喜欢你",
+            "灵感的暴雨",
+            "思维的泉涌",
+            "情感的乱流",
+            "艺术的诞生地只有一个，那就是你",
+            "何不在画中增添一点”迷人的爱情“",
+            "何不在画中增添一点“吊诡的哀伤”",
+            "何不在画中增添一点”优雅的几何“",
+            "何不在画中增添一点“忧郁的漩涡”",
+            "何不在画中增添一点“井喷的秘密”",
+            "简洁可以是艺术，繁复也可以是艺术",
+            "你就是艺术",
+            "我就是艺术",
+            "瀑布，瀑布"
+        ], self.comment_label)
+
+        self.commentary.set_random_comment()
+
+    def random_comment_timer(self):
+        self.comment_label.config(text=self.commentary.random_comment())
+        self.root.after(10000, self.random_comment_timer)  # update the comment every 10 seconds (10000 milliseconds)
     def choose_color(self, color_name):
         # color mapping dictionary
         color_dict = {
@@ -159,7 +195,7 @@ class PaintApp:
 
     def clean(self):
 
-        self.img = np.ones((500, 500, 3), dtype=np.uint8) * 255
+        self.img = np.ones((800, 500, 3), dtype=np.uint8) * 255
         self.update_canvas()
         self.img_stack.append(self.img.copy())  # add the current state to the stack
 
@@ -222,7 +258,7 @@ class PaintApp:
         self.brush_size = int(value)
 
     def clean_canvas(self):
-        self.img = np.ones((500, 500, 3), dtype=np.uint8) * 255
+        self.img = np.ones((800, 500, 3), dtype=np.uint8) * 255
         self.update_canvas()
         self.img_stack.append(self.img.copy())  # add the current state to the stack
 
@@ -269,9 +305,9 @@ class PaintApp:
             # Save the image using PIL
             img_pil.save(save_path)
 
-            #self.clean_canvas()  # Clear the canvas
+            self.commentary.analyze_image(self.img)  # Analyze the image
+
             self.entry_window.destroy()  # Close the name entry window
-            self.comment_label.config(text="很好")
 
     def undo(self):
         if len(self.img_stack) > 1:
@@ -286,6 +322,9 @@ class PaintApp:
             self.clean()  # clean the canvas
             print("Performed undo. Canvas cleaned and the entire stack was cleared.")
 
+    def play_music(self, music_file):
+        pygame.mixer.music.load(music_file)
+        pygame.mixer.music.play(loops=-1)
 
 
 
